@@ -189,6 +189,11 @@ function xProfileHref(profile: Pick<ApiProfile, "normalized">) {
   return `https://x.com/${profile.normalized}`;
 }
 
+function ruggedTooLabel(count: number, language: Language) {
+  if (language === "zh") return `${count} 人也被 Rug`;
+  return count === 1 ? "1 was rugged too" : `${count} were rugged too`;
+}
+
 export default function Home() {
   const [language, setLanguage] = useState<Language>("en");
   const [profiles, setProfiles] = useState<ApiProfile[]>([]);
@@ -542,7 +547,7 @@ export default function Home() {
                           </a>
                         </h3>
                         <p className="meta-line">
-                          {profile.reportCount} {text.submissions} / {profile.tokenCount} {text.tokens} / {profile.upvoteCount} {text.vote}
+                          {profile.reportCount} {text.submissions} / {profile.tokenCount} {text.tokens} / {ruggedTooLabel(profile.upvoteCount, language)}
                         </p>
                       </div>
                       <span className="chain-pill">{levelFor(profile.communityScore, language)}</span>
