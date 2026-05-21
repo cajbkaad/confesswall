@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 type ApiReport = {
   id: string;
@@ -38,7 +38,7 @@ const copy = {
   en: {
     langButton: "中文",
     eyebrow: "Community-submitted X accounts and tokens",
-    title: "Search the X accounts people are reporting.",
+    title: "Search X accounts linked to token rugs and scam reports.",
     body:
       "ConfessWall does not verify claims. It shows which X accounts and tokens have been submitted by the community, with votes, comments, and a simple activity score.",
     searchLabel: "Search X or token",
@@ -63,6 +63,7 @@ const copy = {
     noResultsBody: "Try another X handle, token symbol, or token address.",
     communityScore: "COMMUNITY SCORE",
     view: "View Profile",
+    viewComments: "View Comments",
     vote: "I was rugged too",
     voted: "Voted",
     comments: "Comments",
@@ -105,7 +106,7 @@ const copy = {
   zh: {
     langButton: "EN",
     eyebrow: "社区提交的 X 账号和 Token",
-    title: "搜索被社区登记过的 X 账号。",
+    title: "搜索与 Token Rug 和诈骗举报相关的 X 账号。",
     body: "ConfessWall 不验证举报真伪。这里仅展示社区提交过哪些 X 账号和 Token，并附带点赞、评论和简单热度评分。",
     searchLabel: "搜索 X 或 Token",
     searchPlaceholder: "@username、$TOKEN、代币地址",
@@ -129,6 +130,7 @@ const copy = {
     noResultsBody: "换个 X 账号、Token 符号或代币地址试试。",
     communityScore: "社区分",
     view: "查看主页",
+    viewComments: "查看评论",
     vote: "我也被 Rug 了",
     voted: "已投票",
     comments: "评论",
@@ -219,11 +221,13 @@ export default function Home() {
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [comment, setComment] = useState("");
+  const [drawerFocus, setDrawerFocus] = useState<"profile" | "comments">("profile");
   const [formError, setFormError] = useState("");
   const [chain, setChain] = useState("Solana");
   const [chainOpen, setChainOpen] = useState(false);
   const [votedProfiles, setVotedProfiles] = useState<string[]>([]);
   const [profileCache, setProfileCache] = useState<Record<string, ApiProfile>>({});
+  const commentsSectionRef = useRef<HTMLHeadingElement | null>(null);
   const text = copy[language];
 
   const totals = useMemo(() => {
@@ -308,6 +312,14 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (!selected || drawerFocus !== "comments" || detailLoading) return;
+
+    window.setTimeout(() => {
+      commentsSectionRef.current?.scrollIntoView({ block: "start" });
+    }, 0);
+  }, [detailLoading, drawerFocus, selected]);
+
   function rememberVote(normalized: string) {
     setVotedProfiles((current) => {
       const next = Array.from(new Set([...current, normalized]));
@@ -324,6 +336,16 @@ export default function Home() {
   async function handleFilter(nextFilter: typeof filter) {
     setFilter(nextFilter);
     await loadProfiles(query, nextFilter);
+  }
+
+  async function openProfile(profile: ApiProfile) {
+    setDrawerFocus("profile");
+    await loadProfile(profile.normalized, profile);
+  }
+
+  async function openComments(profile: ApiProfile) {
+    setDrawerFocus("comments");
+    await loadProfile(profile.normalized, profile);
   }
 
   async function submitReport(event: FormEvent<HTMLFormElement>) {
@@ -611,7 +633,7 @@ export default function Home() {
                     </div>
 
                     <div className="action-row">
-                      <button type="button" onClick={() => loadProfile(profile.normalized, profile)}>{text.view}</button>
+                      <button type="button" onClick={() => openProfile(profile)}>{text.view}</button>
                       <button
                         type="button"
                         className={alreadyVoted ? "is-voted" : ""}
@@ -620,7 +642,7 @@ export default function Home() {
                       >
                         {alreadyVoted ? text.voted : text.vote}
                       </button>
-                      <button type="button" onClick={() => loadProfile(profile.normalized, profile)}>{text.comments} {profile.commentCount}</button>
+                      <button type="button" onClick={() => openComments(profile)}>{text.viewComments} {profile.commentCount}</button>
                     </div>
                   </article>
                 );
@@ -680,7 +702,7 @@ export default function Home() {
               <div className="evidence-item">{text.noteC}</div>
             </div>
 
-            <h3>{text.comments}</h3>
+            <h3 ref={commentsSectionRef}>{text.comments}</h3>
             {detailLoading ? <div className="comment-item">{text.loadingProfile}</div> : null}
             <div className="comment-list">
               {selected.comments?.map((item) => (
