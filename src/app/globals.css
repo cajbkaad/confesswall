@@ -55,6 +55,15 @@ button { cursor: pointer; }
   color: #170d0c;
   font-weight: 900;
 }
+.brand-mark svg {
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+}
 .brand strong, .brand small { display: block; }
 .brand small, .eyebrow, .hero-text, .privacy-note, .watch-card p, .rule-grid p, .meta-line, .evidence-item, .comment-item {
   color: var(--muted);

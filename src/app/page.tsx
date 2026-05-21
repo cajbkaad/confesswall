@@ -451,7 +451,13 @@ export default function Home() {
     <>
       <header className="topbar">
         <a className="brand" href="#">
-          <span className="brand-mark">CW</span>
+          <span className="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" role="img">
+              <path d="M16 5 27 25H5L16 5Z" />
+              <circle cx="16" cy="18" r="5" />
+              <circle cx="16" cy="18" r="2" />
+            </svg>
+          </span>
           <span>
             <strong>ConfessWall</strong>
             <small>X community report wall</small>

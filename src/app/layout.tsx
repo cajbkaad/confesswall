@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "RugWall API",
+  title: "ConfessWall",
   description: "X-first community report backend for RugWall"
 };
 
