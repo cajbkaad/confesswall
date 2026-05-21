@@ -555,7 +555,6 @@ export default function Home() {
 
                     <div className="score-row">
                       <div>
-                        <span className="status-pill">{text.rulesTitle}</span>
                         <div className="tags">
                           {profile.reports.slice(0, 3).map((report) => (
                             <span className="tag" key={report.id}>{report.tokenSymbol}</span>
@@ -608,9 +607,8 @@ export default function Home() {
           <div className="drawer-backdrop" onClick={() => setSelected(null)} />
           <article className="drawer-panel">
             <button className="icon-button close-button" type="button" onClick={() => setSelected(null)} aria-label="Close details">X</button>
-            <p className="eyebrow">{levelFor(selected.communityScore, language)} / {text.rulesTitle}</p>
+            <p className="eyebrow">{levelFor(selected.communityScore, language)}</p>
             <h2>{selected.handle}</h2>
-            <p className="hero-text">{text.ruleTwoBody}</p>
             <div className="drawer-score">
               <div><strong>{selected.communityScore}</strong><span>{text.communityScore}</span></div>
               <div><strong>{selected.reportCount}</strong><span>{text.submissions}</span></div>

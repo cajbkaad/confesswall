@@ -217,8 +217,7 @@ input:focus, select:focus, textarea:focus {
 .section-heading { margin-bottom: 18px; }
 .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .rug-card { display: grid; gap: 16px; min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
-.status-pill, .chain-pill, .tag { display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; border-radius: 7px; font-size: 12px; font-weight: 800; }
-.status-pill { background: rgba(255, 85, 74, 0.16); color: var(--danger-2); }
+.chain-pill, .tag { display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; border-radius: 7px; font-size: 12px; font-weight: 800; }
 .chain-pill { background: rgba(109, 167, 255, 0.14); color: var(--blue); }
 .entity-title { min-width: 0; }
 .entity-title h3 { margin: 0 0 8px; overflow-wrap: anywhere; font-size: 22px; }
