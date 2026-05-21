@@ -64,6 +64,7 @@ const copy = {
     communityScore: "COMMUNITY SCORE",
     view: "View Profile",
     vote: "I was rugged too",
+    voted: "Voted",
     comments: "Comments",
     latestActivity: "Latest activity",
     xProfile: "X profile",
@@ -95,6 +96,7 @@ const copy = {
     ruleThreeTitle: "X-first profiles",
     ruleThreeBody: "Each profile groups reported tokens, votes, comments, and activity under one X handle.",
     loading: "Loading profiles...",
+    loadingProfile: "Loading profile...",
     error: "Something went wrong. Try again.",
     required: "Please fill out {field}.",
     invalidUrl: "Please enter a valid URL.",
@@ -128,6 +130,7 @@ const copy = {
     communityScore: "社区分",
     view: "查看主页",
     vote: "我也被 Rug 了",
+    voted: "已投票",
     comments: "评论",
     latestActivity: "最近活跃",
     xProfile: "X 主页",
@@ -159,6 +162,7 @@ const copy = {
     ruleThreeTitle: "以 X 账号为核心",
     ruleThreeBody: "每个主页聚合同一个 X 账号下的 Token、点赞、评论和活跃度。",
     loading: "正在加载...",
+    loadingProfile: "正在加载主页...",
     error: "出错了，请稍后重试。",
     required: "请填写{field}。",
     invalidUrl: "请输入有效链接。",
@@ -210,6 +214,7 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof filterKeys)[number]>("all");
   const [loading, setLoading] = useState(true);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -217,6 +222,8 @@ export default function Home() {
   const [formError, setFormError] = useState("");
   const [chain, setChain] = useState("Solana");
   const [chainOpen, setChainOpen] = useState(false);
+  const [votedProfiles, setVotedProfiles] = useState<string[]>([]);
+  const [profileCache, setProfileCache] = useState<Record<string, ApiProfile>>({});
   const text = copy[language];
 
   const totals = useMemo(() => {
@@ -224,6 +231,29 @@ export default function Home() {
     const tokens = profiles.reduce((sum, profile) => sum + profile.tokenCount, 0);
     return { profiles: profiles.length, reports, tokens };
   }, [profiles]);
+
+  const suggestions = useMemo(() => {
+    const needle = query.trim().toLowerCase().replace(/^@/, "");
+    if (!needle) return [];
+
+    const options = new Map<string, string>();
+    profiles.forEach((profile) => {
+      if (profile.handle.toLowerCase().includes(needle) || profile.normalized.includes(needle)) {
+        options.set(profile.handle, profile.handle);
+      }
+
+      profile.reports.forEach((report) => {
+        if (report.tokenSymbol.toLowerCase().includes(needle)) {
+          options.set(report.tokenSymbol, `${report.tokenSymbol} / ${profile.handle}`);
+        }
+        if (report.tokenAddress?.toLowerCase().includes(needle)) {
+          options.set(report.tokenAddress, `${report.tokenAddress} / ${profile.handle}`);
+        }
+      });
+    });
+
+    return Array.from(options.entries()).slice(0, 6).map(([value, label]) => ({ value, label }));
+  }, [profiles, query]);
 
   async function loadProfiles(nextQuery = query, nextFilter = filter) {
     setLoading(true);
@@ -245,17 +275,46 @@ export default function Home() {
     }
   }
 
-  async function loadProfile(handle: string) {
-    const response = await fetch(`/api/profiles/${encodeURIComponent(handle.replace(/^@/, ""))}`);
-    if (!response.ok) throw new Error("Failed to load profile");
-    const profile = await response.json();
-    setSelected(profile);
+  async function loadProfile(handle: string, fallback?: ApiProfile) {
+    const normalized = handle.replace(/^@/, "").toLowerCase();
+    const cached = profileCache[normalized];
+
+    if (cached) {
+      setSelected(cached);
+      return cached;
+    }
+
+    if (fallback) {
+      setSelected(fallback);
+    }
+
+    setDetailLoading(true);
+    try {
+      const response = await fetch(`/api/profiles/${encodeURIComponent(normalized)}`);
+      if (!response.ok) throw new Error("Failed to load profile");
+      const profile = await response.json();
+      setProfileCache((current) => ({ ...current, [profile.normalized]: profile }));
+      setSelected(profile);
+      return profile;
+    } finally {
+      setDetailLoading(false);
+    }
   }
 
   useEffect(() => {
+    const storedVotes = localStorage.getItem("confesswall-voted-profiles");
+    if (storedVotes) setVotedProfiles(JSON.parse(storedVotes));
     loadProfiles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function rememberVote(normalized: string) {
+    setVotedProfiles((current) => {
+      const next = Array.from(new Set([...current, normalized]));
+      localStorage.setItem("confesswall-voted-profiles", JSON.stringify(next));
+      return next;
+    });
+  }
 
   async function handleSearch(event: FormEvent) {
     event.preventDefault();
@@ -302,6 +361,7 @@ export default function Home() {
     }
 
     setFormError("");
+
     const payload = {
       xHandle,
       tokenSymbol,
@@ -324,7 +384,7 @@ export default function Home() {
 
       setShowForm(false);
       await loadProfiles(query, filter);
-      await loadProfile(data.profile.handle);
+      await loadProfile(data.profile.handle, data.profile);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : text.error);
     } finally {
@@ -333,6 +393,8 @@ export default function Home() {
   }
 
   async function vote(profile: ApiProfile) {
+    if (votedProfiles.includes(profile.normalized)) return;
+
     try {
       const response = await fetch(`/api/profile-votes/${encodeURIComponent(profile.normalized)}`, {
         method: "POST",
@@ -340,7 +402,20 @@ export default function Home() {
         body: JSON.stringify({ anonymousUserId: getAnonymousUserId() })
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Vote failed");
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          rememberVote(profile.normalized);
+          return;
+        }
+        throw new Error(data.error || "Vote failed");
+      }
+
+      rememberVote(profile.normalized);
+      setProfileCache((current) => {
+        const { [profile.normalized]: _removed, ...rest } = current;
+        return rest;
+      });
       await loadProfiles(query, filter);
       if (selected?.id === profile.id) await loadProfile(profile.normalized);
     } catch (caught) {
@@ -361,6 +436,10 @@ export default function Home() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Comment failed");
       setComment("");
+      setProfileCache((current) => {
+        const { [selected.normalized]: _removed, ...rest } = current;
+        return rest;
+      });
       await loadProfiles(query, filter);
       await loadProfile(selected.normalized);
     } catch (caught) {
@@ -409,6 +488,22 @@ export default function Home() {
               />
               <button type="submit">{text.search}</button>
             </div>
+            {suggestions.length ? (
+              <div className="search-suggestions">
+                {suggestions.map((suggestion) => (
+                  <button
+                    key={suggestion.value}
+                    type="button"
+                    onClick={() => {
+                      setQuery(suggestion.value);
+                      loadProfiles(suggestion.value, filter);
+                    }}
+                  >
+                    {suggestion.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
             <div className="quick-stats" aria-label="Platform stats">
               <span><strong>{totals.reports}</strong> {text.submissions}</span>
               <span><strong>{totals.profiles}</strong> {text.accounts}</span>
@@ -474,46 +569,56 @@ export default function Home() {
               </article>
             ) : null}
             <div className="cards">
-              {profiles.map((profile) => (
-                <article className="rug-card" key={profile.id}>
-                  <div className="card-header">
-                    <div className="entity-title">
-                      <h3>{profile.handle}</h3>
-                      <p className="meta-line">
-                        {profile.reportCount} {text.submissions} / {profile.tokenCount} {text.tokens} / {profile.upvoteCount} {text.vote}
-                      </p>
+              {profiles.map((profile) => {
+                const alreadyVoted = votedProfiles.includes(profile.normalized);
+                return (
+                  <article className="rug-card" key={profile.id}>
+                    <div className="card-header">
+                      <div className="entity-title">
+                        <h3>{profile.handle}</h3>
+                        <p className="meta-line">
+                          {profile.reportCount} {text.submissions} / {profile.tokenCount} {text.tokens} / {profile.upvoteCount} {text.vote}
+                        </p>
+                      </div>
+                      <span className="chain-pill">{levelFor(profile.communityScore, language)}</span>
                     </div>
-                    <span className="chain-pill">{levelFor(profile.communityScore, language)}</span>
-                  </div>
 
-                  <div className="score-row">
-                    <div>
-                      <span className="status-pill">{text.rulesTitle}</span>
-                      <div className="tags">
-                        {profile.reports.slice(0, 3).map((report) => (
-                          <span className="tag" key={report.id}>{report.tokenSymbol}</span>
-                        ))}
+                    <div className="score-row">
+                      <div>
+                        <span className="status-pill">{text.rulesTitle}</span>
+                        <div className="tags">
+                          {profile.reports.slice(0, 3).map((report) => (
+                            <span className="tag" key={report.id}>{report.tokenSymbol}</span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="score-box" aria-label={`Community Score ${profile.communityScore}`}>
+                        <strong>{profile.communityScore}</strong>
+                        <span>{text.communityScore}</span>
                       </div>
                     </div>
-                    <div className="score-box" aria-label={`Community Score ${profile.communityScore}`}>
-                      <strong>{profile.communityScore}</strong>
-                      <span>{text.communityScore}</span>
+
+                    <div className="identity-list">
+                      <div className="identity-row"><span>{text.xProfile}</span><span>{profile.xUrl}</span></div>
+                      <div className="identity-row"><span>{text.latestActivity}</span><span>{shortAge(profile.lastActivityAt)}</span></div>
+                      <div className="identity-row"><span>{text.comments}</span><span>{profile.commentCount}</span></div>
                     </div>
-                  </div>
 
-                  <div className="identity-list">
-                    <div className="identity-row"><span>{text.xProfile}</span><span>{profile.xUrl}</span></div>
-                    <div className="identity-row"><span>{text.latestActivity}</span><span>{shortAge(profile.lastActivityAt)}</span></div>
-                    <div className="identity-row"><span>{text.comments}</span><span>{profile.commentCount}</span></div>
-                  </div>
-
-                  <div className="action-row">
-                    <button type="button" onClick={() => loadProfile(profile.normalized)}>{text.view}</button>
-                    <button type="button" onClick={() => vote(profile)}>{text.vote}</button>
-                    <button type="button" onClick={() => loadProfile(profile.normalized)}>{text.comments} {profile.commentCount}</button>
-                  </div>
-                </article>
-              ))}
+                    <div className="action-row">
+                      <button type="button" onClick={() => loadProfile(profile.normalized, profile)}>{text.view}</button>
+                      <button
+                        type="button"
+                        className={alreadyVoted ? "is-voted" : ""}
+                        disabled={alreadyVoted}
+                        onClick={() => vote(profile)}
+                      >
+                        {alreadyVoted ? text.voted : text.vote}
+                      </button>
+                      <button type="button" onClick={() => loadProfile(profile.normalized, profile)}>{text.comments} {profile.commentCount}</button>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           </section>
         </section>
@@ -570,6 +675,7 @@ export default function Home() {
             </div>
 
             <h3>{text.comments}</h3>
+            {detailLoading ? <div className="comment-item">{text.loadingProfile}</div> : null}
             <div className="comment-list">
               {selected.comments?.map((item) => (
                 <div className="comment-item" key={item.id}>{item.content}</div>
@@ -618,7 +724,7 @@ export default function Home() {
                     }}
                   >
                     <span>{chain || text.chooseChain}</span>
-                    <span className="select-chevron">⌄</span>
+                    <span className="select-chevron">v</span>
                   </button>
                   {chainOpen ? (
                     <div className="custom-select-menu" role="listbox">
