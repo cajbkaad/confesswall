@@ -96,6 +96,7 @@ const copy = {
     error: "Something went wrong. Try again.",
     required: "Please fill out {field}.",
     invalidUrl: "Please enter a valid URL.",
+    duplicateReport: "This X account and token have already been reported.",
     chooseChain: "Choose chain"
   },
   zh: {
@@ -164,6 +165,7 @@ const copy = {
     error: "出错了，请稍后重试。",
     required: "请填写{field}。",
     invalidUrl: "请输入有效链接。",
+    duplicateReport: "这个 X 账号和 Token 已经被提交过。",
     chooseChain: "选择链"
   }
 };
@@ -400,7 +402,14 @@ export default function Home() {
         body: JSON.stringify(payload)
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Submit failed");
+      if (!response.ok) {
+        if (data.code === "DUPLICATE_X_TOKEN_REPORT") {
+          setFormError(text.duplicateReport);
+          return;
+        }
+
+        throw new Error(data.error || "Submit failed");
+      }
 
       setShowForm(false);
       await loadProfiles(query, filter);

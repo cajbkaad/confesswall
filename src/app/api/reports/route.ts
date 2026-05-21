@@ -41,6 +41,24 @@ export async function POST(request: NextRequest) {
   const input = parsed.data;
   const normalized = normalizeXHandle(input.xHandle);
   const tokenSymbol = normalizeTokenSymbol(input.tokenSymbol);
+  const duplicateReport = await prisma.tokenReport.findFirst({
+    where: {
+      normalizedToken: tokenSymbol,
+      status: "VISIBLE",
+      xProfile: { normalized }
+    },
+    select: { id: true }
+  });
+
+  if (duplicateReport) {
+    return NextResponse.json(
+      {
+        code: "DUPLICATE_X_TOKEN_REPORT",
+        error: "This X account and token have already been reported."
+      },
+      { status: 409 }
+    );
+  }
 
   try {
     const report = await prisma.$transaction(async (tx) => {
