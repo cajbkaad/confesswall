@@ -67,11 +67,14 @@ model Vote {
   xProfileId      String
   anonymousUserId String
   ipHash          String
+  userAgentHash   String   @default("")
   createdAt       DateTime @default(now())
   xProfile        XProfile @relation(fields: [xProfileId], references: [id], onDelete: Cascade)
 
   @@unique([xProfileId, anonymousUserId])
   @@index([ipHash])
+  @@index([xProfileId, ipHash])
+  @@index([xProfileId, userAgentHash])
   @@index([createdAt])
 }
 

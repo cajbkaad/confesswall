@@ -39,7 +39,8 @@ export async function POST(request: NextRequest, { params }: { params: { handle:
       data: {
         xProfileId: profile.id,
         anonymousUserId: parsed.data.anonymousUserId,
-        ipHash: identity.ipHash
+        ipHash: identity.ipHash,
+        userAgentHash: identity.userAgentHash
       }
     });
 
