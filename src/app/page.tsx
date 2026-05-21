@@ -44,8 +44,8 @@ const copy = {
     privacy: "No account required. Anonymous submissions are rate-limited to reduce spam.",
     filters: {
       all: "All",
-      trending: "Trending Risk",
-      watchlisted: "Watchlisted",
+      trending: "High Risk",
+      watchlisted: "Flagged",
       multi: "Multiple Tokens",
       new: "New Reports"
     },
@@ -112,8 +112,8 @@ const copy = {
     privacy: "无需注册即可提交。匿名提交会进行频率限制以减少垃圾内容。",
     filters: {
       all: "全部",
-      trending: "趋势风险",
-      watchlisted: "观察名单",
+      trending: "高风险",
+      watchlisted: "已标记",
       multi: "多个 Token",
       new: "最新提交"
     },
@@ -195,14 +195,14 @@ function getAnonymousUserId() {
 function levelFor(score: number, language: Language) {
   if (language === "zh") {
     if (score >= 80) return "严重风险";
-    if (score >= 60) return "高风险";
-    if (score >= 30) return "已标记";
+    if (score >= 40) return "高风险";
+    if (score >= 25) return "已标记";
     return "低信号";
   }
 
   if (score >= 80) return "Severe Risk";
-  if (score >= 60) return "High Risk";
-  if (score >= 30) return "Flagged";
+  if (score >= 40) return "High Risk";
+  if (score >= 25) return "Flagged";
   return "Low Signal";
 }
 

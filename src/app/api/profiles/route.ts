@@ -29,8 +29,8 @@ export async function GET(request: NextRequest) {
             ]
           }
         : {},
-      filter === "trending" ? { communityScore: { gte: 80 } } : {},
-      filter === "watchlisted" ? { communityScore: { gte: 30, lt: 80 } } : {},
+      filter === "trending" ? { communityScore: { gte: 40 } } : {},
+      filter === "watchlisted" ? { communityScore: { gte: 25, lt: 40 } } : {},
       filter === "multi" ? { tokenCount: { gte: 2 } } : {},
       filter === "new"
         ? { lastActivityAt: { gte: new Date(Date.now() - 7 * 86_400_000) } }
