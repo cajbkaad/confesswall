@@ -334,7 +334,7 @@ export default function Home() {
 
   async function vote(profile: ApiProfile) {
     try {
-      const response = await fetch(`/api/profiles/${encodeURIComponent(profile.normalized)}/vote`, {
+      const response = await fetch(`/api/profile-votes/${encodeURIComponent(profile.normalized)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ anonymousUserId: getAnonymousUserId() })
@@ -353,7 +353,7 @@ export default function Home() {
     if (!selected || !comment.trim()) return;
 
     try {
-      const response = await fetch(`/api/profiles/${encodeURIComponent(selected.normalized)}/comments`, {
+      const response = await fetch(`/api/profile-comments/${encodeURIComponent(selected.normalized)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: comment, anonymousUserId: getAnonymousUserId() })

@@ -101,7 +101,7 @@ Body:
 ### Vote
 
 ```text
-POST /api/profiles/:handle/vote
+POST /api/profile-votes/:handle
 ```
 
 Body:
@@ -115,7 +115,7 @@ Body:
 ### Comment
 
 ```text
-POST /api/profiles/:handle/comments
+POST /api/profile-comments/:handle
 ```
 
 Body:
