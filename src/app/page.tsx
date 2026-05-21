@@ -579,11 +579,12 @@ export default function Home() {
                 <p className="meta-line">{text.noResultsBody}</p>
               </article>
             ) : null}
-            <div className="cards">
-              {profiles.map((profile) => {
-                const alreadyVoted = votedProfiles.includes(profile.normalized);
-                return (
-                  <article className="rug-card" key={profile.id}>
+            {!loading ? (
+              <div className="cards">
+                {profiles.map((profile) => {
+                  const alreadyVoted = votedProfiles.includes(profile.normalized);
+                  return (
+                    <article className="rug-card" key={profile.id}>
                     <div className="card-header">
                       <div className="entity-title">
                         <h3>
@@ -627,10 +628,11 @@ export default function Home() {
                         {alreadyVoted ? text.voted : text.vote}
                       </button>
                     </div>
-                  </article>
-                );
-              })}
-            </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : null}
           </section>
         </section>
 
