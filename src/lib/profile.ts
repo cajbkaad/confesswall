@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { calculateCommunityScore } from "@/lib/score";
+import { calculateScamRiskScore } from "@/lib/score";
 
 export async function refreshProfileStats(xProfileId: string) {
   const [reports, upvotes, comments, reportRows, profile] = await Promise.all([
@@ -26,11 +26,10 @@ export async function refreshProfileStats(xProfileId: string) {
     reportRows.map((report) => report.tokenAddress?.toLowerCase() || report.normalizedToken)
   );
   const tokenCount = tokenKeys.size;
-  const communityScore = calculateCommunityScore({
+  const communityScore = calculateScamRiskScore({
     reports,
     tokens: tokenCount,
     upvotes,
-    comments,
     lastActivityAt: profile.lastActivityAt
   });
 

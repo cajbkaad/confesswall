@@ -2,7 +2,6 @@ type ScoreInput = {
   reports: number;
   tokens: number;
   upvotes: number;
-  comments: number;
   lastActivityAt: Date;
 };
 
@@ -32,14 +31,12 @@ function freshnessScore(lastActivityAt: Date) {
   return 1;
 }
 
-export function calculateCommunityScore(input: ScoreInput) {
-  const voteScore = Math.min(20, Math.log2(input.upvotes + 1) * 4);
-  const commentScore = Math.min(10, Math.log2(input.comments + 1) * 2);
+export function calculateScamRiskScore(input: ScoreInput) {
+  const voteScore = Math.min(25, Math.log2(input.upvotes + 1) * 5);
   const raw =
     reportScore(input.reports) +
     tokenScore(input.tokens) +
     voteScore +
-    commentScore +
     freshnessScore(input.lastActivityAt);
 
   return Math.min(100, Math.round(raw));

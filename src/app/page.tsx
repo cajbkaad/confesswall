@@ -52,7 +52,7 @@ const copy = {
     submit: "Submit X Report",
     noResults: "No matching profiles",
     noResultsBody: "Try another X handle, token symbol, or token address.",
-    communityScore: "COMMUNITY SCORE",
+    communityScore: "SCAM RISK SCORE",
     view: "View Profile",
     vote: "I was rugged too",
     voted: "Voted",
@@ -70,7 +70,7 @@ const copy = {
     create: "Submit Report",
     reportedTokens: "Reported Tokens",
     activityNotes: "Activity Notes",
-    noteA: "Score is based on reports, token count, upvotes, and freshness.",
+    noteA: "Scam Risk Score is based on reports, token count, upvotes, and freshness.",
     noteB: "No on-chain verification is performed.",
     noteC: "Use this as a social signal, not a factual finding.",
     rulesEyebrow: "Important context",
@@ -111,7 +111,7 @@ const copy = {
     submit: "提交 X 举报",
     noResults: "没有找到匹配主页",
     noResultsBody: "换个 X 账号、Token 符号或代币地址试试。",
-    communityScore: "社区分",
+    communityScore: "诈骗风险分",
     view: "查看主页",
     vote: "我也被 Rug 了",
     voted: "已投票",
@@ -129,7 +129,7 @@ const copy = {
     create: "提交举报",
     reportedTokens: "被登记 Token",
     activityNotes: "活跃说明",
-    noteA: "分数基于提交数、Token 数、点赞和最近活跃度。",
+    noteA: "诈骗风险分基于提交数、Token 数、点赞和最近活跃度。",
     noteB: "当前不做链上验证。",
     noteC: "请把它当成社群风险信号，而不是事实认定。",
     rulesEyebrow: "重要说明",
@@ -561,7 +561,7 @@ export default function Home() {
                           ))}
                         </div>
                       </div>
-                      <div className="score-box" aria-label={`Community Score ${profile.communityScore}`}>
+                      <div className="score-box" aria-label={`Scam Risk Score ${profile.communityScore}`}>
                         <strong>{profile.communityScore}</strong>
                         <span>{text.communityScore}</span>
                       </div>
