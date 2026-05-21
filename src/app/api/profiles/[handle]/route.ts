@@ -10,11 +10,6 @@ export async function GET(_request: Request, { params }: { params: { handle: str
       reports: {
         where: { status: "VISIBLE" },
         orderBy: { createdAt: "desc" }
-      },
-      comments: {
-        where: { status: "VISIBLE" },
-        orderBy: { createdAt: "desc" },
-        take: 50
       }
     }
   });

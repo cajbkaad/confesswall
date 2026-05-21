@@ -2,15 +2,12 @@ import { prisma } from "@/lib/prisma";
 import { calculateScamRiskScore } from "@/lib/score";
 
 export async function refreshProfileStats(xProfileId: string) {
-  const [reports, upvotes, comments, reportRows, profile] = await Promise.all([
+  const [reports, upvotes, reportRows, profile] = await Promise.all([
     prisma.tokenReport.count({
       where: { xProfileId, status: "VISIBLE" }
     }),
     prisma.vote.count({
       where: { xProfileId }
-    }),
-    prisma.comment.count({
-      where: { xProfileId, status: "VISIBLE" }
     }),
     prisma.tokenReport.findMany({
       where: { xProfileId, status: "VISIBLE" },
@@ -38,7 +35,7 @@ export async function refreshProfileStats(xProfileId: string) {
       reportCount: reports,
       tokenCount,
       upvoteCount: upvotes,
-      commentCount: comments,
+      commentCount: 0,
       communityScore
     }
   });

@@ -69,15 +69,12 @@ try {
   console.log(`Refreshing ${profiles.length} profile score(s)...`);
 
   for (const profile of profiles) {
-    const [reports, upvotes, comments, reportRows] = await Promise.all([
+    const [reports, upvotes, reportRows] = await Promise.all([
       prisma.tokenReport.count({
         where: { xProfileId: profile.id, status: "VISIBLE" }
       }),
       prisma.vote.count({
         where: { xProfileId: profile.id }
-      }),
-      prisma.comment.count({
-        where: { xProfileId: profile.id, status: "VISIBLE" }
       }),
       prisma.tokenReport.findMany({
         where: { xProfileId: profile.id, status: "VISIBLE" },
@@ -101,7 +98,7 @@ try {
         reportCount: reports,
         tokenCount,
         upvoteCount: upvotes,
-        commentCount: comments,
+        commentCount: 0,
         communityScore: scamRiskScore
       }
     });

@@ -34,8 +34,7 @@ export async function GET(request: NextRequest) {
       filter === "multi" ? { tokenCount: { gte: 2 } } : {},
       filter === "new"
         ? { lastActivityAt: { gte: new Date(Date.now() - 7 * 86_400_000) } }
-        : {},
-      filter === "disputed" ? { commentCount: { gte: 20 } } : {}
+        : {}
     ]
   };
 

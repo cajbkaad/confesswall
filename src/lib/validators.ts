@@ -13,11 +13,6 @@ export const createReportSchema = z.object({
   anonymousUserId: anonymousUserIdSchema
 });
 
-export const createCommentSchema = z.object({
-  content: z.string().min(2).max(1000),
-  anonymousUserId: anonymousUserIdSchema
-});
-
 export const voteSchema = z.object({
   anonymousUserId: anonymousUserIdSchema
 });
