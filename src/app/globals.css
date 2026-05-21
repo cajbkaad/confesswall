@@ -237,21 +237,11 @@ input:focus, select:focus, textarea:focus {
 .score-box span { color: var(--muted); font-size: 11px; text-align: center; }
 .identity-list, .evidence-list { display: grid; gap: 8px; margin: 0; }
 .identity-row { padding: 10px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.04); }
-.identity-row span:last-child,
-.identity-row a {
+.identity-row span:last-child {
   min-width: 0;
   overflow-wrap: anywhere;
   color: var(--muted);
   text-align: right;
-}
-.identity-row a {
-  color: var(--blue);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
-}
-.identity-row a:hover {
-  color: var(--danger-2);
 }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .tag { background: rgba(255, 255, 255, 0.06); color: var(--muted); }

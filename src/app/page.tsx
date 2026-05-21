@@ -57,7 +57,6 @@ const copy = {
     vote: "I was rugged too",
     voted: "Voted",
     latestActivity: "Latest activity",
-    xProfile: "X profile",
     reportType: "Report type",
     whatHappened: "What happened?",
     submitTitle: "Add an X account and token",
@@ -117,7 +116,6 @@ const copy = {
     vote: "我也被 Rug 了",
     voted: "已投票",
     latestActivity: "最近活跃",
-    xProfile: "X 主页",
     reportType: "举报类型",
     whatHappened: "发生了什么？",
     submitTitle: "添加一个 X 账号和 Token",
@@ -566,12 +564,6 @@ export default function Home() {
                     </div>
 
                     <div className="identity-list">
-                      <div className="identity-row">
-                        <span>{text.xProfile}</span>
-                        <a href={xProfileHref(profile)} target="_blank" rel="noreferrer">
-                          {xProfileHref(profile)}
-                        </a>
-                      </div>
                       <div className="identity-row"><span>{text.latestActivity}</span><span>{shortAge(profile.lastActivityAt)}</span></div>
                     </div>
 
@@ -620,12 +612,6 @@ export default function Home() {
               <div><strong>{selected.tokenCount}</strong><span>{text.tokens}</span></div>
             </div>
             <div className="identity-list">
-              <div className="identity-row">
-                <span>{text.xProfile}</span>
-                <a href={xProfileHref(selected)} target="_blank" rel="noreferrer">
-                  {xProfileHref(selected)}
-                </a>
-              </div>
               <div className="identity-row"><span>{text.vote}</span><span>{selected.upvoteCount}</span></div>
               <div className="identity-row"><span>{text.latestActivity}</span><span>{shortAge(selected.lastActivityAt)}</span></div>
             </div>
