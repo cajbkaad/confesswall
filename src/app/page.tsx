@@ -54,6 +54,8 @@ const copy = {
     submit: "Submit X Report",
     noResults: "No matching profiles",
     noResultsBody: "Try another X handle, token symbol, or token address.",
+    noFilterResults: "No accounts in {filter} yet.",
+    noFilterResultsBody: "Switch filters or check back after more community reports come in.",
     communityScore: "SCAM RISK SCORE",
     view: "View Profile",
     vote: "I was rugged too",
@@ -123,6 +125,8 @@ const copy = {
     submit: "提交 X 举报",
     noResults: "没有找到匹配主页",
     noResultsBody: "换个 X 账号、Token 符号或代币地址试试。",
+    noFilterResults: "{filter}里还没有账号。",
+    noFilterResultsBody: "可以切换筛选，或等更多社区提交后再查看。",
     communityScore: "诈骗风险分",
     view: "查看主页",
     vote: "我也被 Rug 了",
@@ -277,6 +281,21 @@ export default function Home() {
 
     return Array.from(options.entries()).slice(0, 6).map(([value, label]) => ({ value, label }));
   }, [profiles, query]);
+
+  const emptyState = useMemo(() => {
+    const hasQuery = Boolean(query.trim());
+    if (hasQuery || filter === "all") {
+      return {
+        title: text.noResults,
+        body: text.noResultsBody
+      };
+    }
+
+    return {
+      title: text.noFilterResults.replace("{filter}", text.filters[filter]),
+      body: text.noFilterResultsBody
+    };
+  }, [filter, query, text]);
 
   async function loadProfiles(nextQuery = query, nextFilter = filter) {
     setLoading(true);
@@ -575,8 +594,8 @@ export default function Home() {
             {loading ? <article className="rug-card"><h3>{text.loading}</h3></article> : null}
             {!loading && profiles.length === 0 ? (
               <article className="rug-card">
-                <h3>{text.noResults}</h3>
-                <p className="meta-line">{text.noResultsBody}</p>
+                <h3>{emptyState.title}</h3>
+                <p className="meta-line">{emptyState.body}</p>
               </article>
             ) : null}
             {!loading ? (
