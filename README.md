@@ -46,6 +46,14 @@ Default URL:
 http://localhost:3000
 ```
 
+## Refresh Scores
+
+After changing the scoring formula, refresh stored profile scores:
+
+```bash
+npm run scores:refresh
+```
+
 ## API
 
 ### List Profiles

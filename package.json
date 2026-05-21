@@ -9,7 +9,8 @@
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "scores:refresh": "node scripts/refresh-scores.mjs"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
