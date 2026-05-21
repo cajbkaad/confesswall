@@ -538,7 +538,11 @@ export default function Home() {
                   <article className="rug-card" key={profile.id}>
                     <div className="card-header">
                       <div className="entity-title">
-                        <h3>{profile.handle}</h3>
+                        <h3>
+                          <a href={xProfileHref(profile)} target="_blank" rel="noreferrer">
+                            {profile.handle}
+                          </a>
+                        </h3>
                         <p className="meta-line">
                           {profile.reportCount} {text.submissions} / {profile.tokenCount} {text.tokens} / {profile.upvoteCount} {text.vote}
                         </p>

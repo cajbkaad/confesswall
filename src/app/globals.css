@@ -222,6 +222,15 @@ input:focus, select:focus, textarea:focus {
 .chain-pill { background: rgba(109, 167, 255, 0.14); color: var(--blue); }
 .entity-title { min-width: 0; }
 .entity-title h3 { margin: 0 0 8px; overflow-wrap: anywhere; font-size: 22px; }
+.entity-title h3 a {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+.entity-title h3 a:hover {
+  color: var(--blue);
+}
 .meta-line { margin: 0; overflow-wrap: anywhere; font-size: 13px; }
 .score-box { display: grid; place-items: center; width: 74px; height: 74px; flex: 0 0 auto; border: 1px solid rgba(255, 85, 74, 0.38); border-radius: 8px; background: rgba(255, 85, 74, 0.12); }
 .score-box strong { color: var(--danger-2); font-size: 28px; }
