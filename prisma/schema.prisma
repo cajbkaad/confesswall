@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum ReportStatus {
+  VISIBLE
+  HIDDEN
+}
+
+enum CommentStatus {
+  VISIBLE
+  HIDDEN
+}
+
+model XProfile {
+  id             String        @id @default(cuid())
+  handle         String
+  normalized     String        @unique
+  xUrl           String
+  reportCount    Int           @default(0)
+  tokenCount     Int           @default(0)
+  upvoteCount    Int           @default(0)
+  commentCount   Int           @default(0)
+  communityScore Int           @default(0)
+  lastActivityAt DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  reports        TokenReport[]
+  votes          Vote[]
+  comments       Comment[]
+
+  @@index([communityScore])
+  @@index([lastActivityAt])
+}
+
+model TokenReport {
+  id              String       @id @default(cuid())
+  xProfileId      String
+  tokenSymbol     String
+  tokenAddress    String?
+  normalizedToken String
+  chain           String
+  reportType      String
+  description     String
+  evidenceUrl     String?
+  anonymousUserId String
+  ipHash          String
+  userAgentHash   String
+  status          ReportStatus @default(VISIBLE)
+  createdAt       DateTime     @default(now())
+  xProfile        XProfile     @relation(fields: [xProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([xProfileId, anonymousUserId])
+  @@index([normalizedToken])
+  @@index([ipHash])
+  @@index([createdAt])
+}
+
+model Vote {
+  id              String   @id @default(cuid())
+  xProfileId      String
+  anonymousUserId String
+  ipHash          String
+  createdAt       DateTime @default(now())
+  xProfile        XProfile @relation(fields: [xProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([xProfileId, anonymousUserId])
+  @@index([ipHash])
+  @@index([createdAt])
+}
+
+model Comment {
+  id              String        @id @default(cuid())
+  xProfileId      String
+  content         String
+  anonymousUserId String
+  ipHash          String
+  userAgentHash   String
+  status          CommentStatus @default(VISIBLE)
+  createdAt       DateTime      @default(now())
+  xProfile        XProfile      @relation(fields: [xProfileId], references: [id], onDelete: Cascade)
+
+  @@index([ipHash])
+  @@index([createdAt])
+}
+
+model RateLimit {
+  id          String   @id @default(cuid())
+  bucketKey   String
+  action      String
+  count       Int      @default(0)
+  windowStart DateTime
+  expiresAt   DateTime
+
+  @@unique([bucketKey, action, windowStart])
+  @@index([expiresAt])
+}
+
+model AdminAction {
+  id         String   @id @default(cuid())
+  targetType String
+  targetId   String
+  action     String
+  reason     String?
+  createdAt  DateTime @default(now())
+}
