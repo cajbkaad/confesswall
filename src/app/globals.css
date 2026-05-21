@@ -65,7 +65,7 @@ button { cursor: pointer; }
   stroke-width: 2.2;
 }
 .brand strong, .brand small { display: block; }
-.brand small, .eyebrow, .hero-text, .privacy-note, .watch-card p, .rule-grid p, .meta-line, .evidence-item, .comment-item {
+.brand small, .eyebrow, .hero-text, .privacy-note, .watch-card p, .rule-grid p, .meta-line, .evidence-item {
   color: var(--muted);
 }
 .nav-links { display: flex; gap: 14px; }
@@ -117,7 +117,7 @@ h2 { margin-bottom: 0; font-size: 28px; letter-spacing: 0; }
   box-shadow: var(--shadow);
 }
 .search-panel { padding: 20px; }
-.search-panel label, .comment-form label {
+.search-panel label {
   display: block;
   margin-bottom: 10px;
   color: var(--muted);
@@ -226,7 +226,7 @@ input:focus, select:focus, textarea:focus {
 .score-box { display: grid; place-items: center; width: 74px; height: 74px; flex: 0 0 auto; border: 1px solid rgba(255, 85, 74, 0.38); border-radius: 8px; background: rgba(255, 85, 74, 0.12); }
 .score-box strong { color: var(--danger-2); font-size: 28px; }
 .score-box span { color: var(--muted); font-size: 11px; text-align: center; }
-.identity-list, .evidence-list, .comment-list { display: grid; gap: 8px; margin: 0; }
+.identity-list, .evidence-list { display: grid; gap: 8px; margin: 0; }
 .identity-row { padding: 10px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.04); }
 .identity-row span:last-child { min-width: 0; overflow-wrap: anywhere; color: var(--muted); text-align: right; }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
@@ -249,12 +249,12 @@ input:focus, select:focus, textarea:focus {
 .close-button { float: right; }
 .drawer-panel h2 { padding-right: 44px; }
 .drawer-score { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 22px 0; }
-.drawer-score div, .evidence-item, .comment-item { padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255, 255, 255, 0.04); }
+.drawer-score div, .evidence-item { padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255, 255, 255, 0.04); }
 .drawer-score strong { display: block; color: var(--danger-2); font-size: 26px; }
 .report-dialog { position: fixed; inset: 0; z-index: 30; width: min(640px, calc(100% - 28px)); height: max-content; max-height: calc(100vh - 28px); overflow-y: auto; margin: auto; border: 1px solid var(--line); border-radius: 8px; padding: 0; background: transparent; color: var(--text); }
 .report-dialog::backdrop { background: rgba(0, 0, 0, 0.68); }
 .report-form { display: grid; gap: 16px; padding: 22px; }
-.report-form label, .field-group, .comment-form { display: grid; gap: 8px; color: var(--muted); font-size: 14px; font-weight: 800; }
+.report-form label, .field-group { display: grid; gap: 8px; color: var(--muted); font-size: 14px; font-weight: 800; }
 .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .form-error {
   padding: 12px;

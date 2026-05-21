@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 type ApiReport = {
   id: string;
@@ -8,12 +8,6 @@ type ApiReport = {
   tokenAddress: string | null;
   chain: string;
   reportType: string;
-  createdAt: string;
-};
-
-type ApiComment = {
-  id: string;
-  content: string;
   createdAt: string;
 };
 
@@ -25,11 +19,9 @@ type ApiProfile = {
   reportCount: number;
   tokenCount: number;
   upvoteCount: number;
-  commentCount: number;
   communityScore: number;
   lastActivityAt: string;
   reports: ApiReport[];
-  comments?: ApiComment[];
 };
 
 type Language = "en" | "zh";
@@ -40,7 +32,7 @@ const copy = {
     eyebrow: "Community-submitted X accounts and tokens",
     title: "Search X accounts linked to token rugs and scam reports.",
     body:
-      "ConfessWall does not verify claims. It shows which X accounts and tokens have been submitted by the community, with votes, comments, and a simple activity score.",
+      "ConfessWall does not verify claims. It shows which X accounts and tokens have been submitted by the community, with votes and a simple activity score.",
     searchLabel: "Search X or token",
     searchPlaceholder: "@username, $TOKEN, token address",
     search: "Search",
@@ -53,8 +45,7 @@ const copy = {
       trending: "Trending Risk",
       watchlisted: "Watchlisted",
       multi: "Multiple Tokens",
-      new: "New Reports",
-      disputed: "Heated Comments"
+      new: "New Reports"
     },
     trending: "Trending X accounts",
     wallTitle: "Reported X accounts",
@@ -63,10 +54,8 @@ const copy = {
     noResultsBody: "Try another X handle, token symbol, or token address.",
     communityScore: "COMMUNITY SCORE",
     view: "View Profile",
-    viewComments: "View Comments",
     vote: "I was rugged too",
     voted: "Voted",
-    comments: "Comments",
     latestActivity: "Latest activity",
     xProfile: "X profile",
     reportType: "Report type",
@@ -82,12 +71,9 @@ const copy = {
     create: "Submit Report",
     reportedTokens: "Reported Tokens",
     activityNotes: "Activity Notes",
-    noteA: "Score is based on reports, token count, upvotes, comments, and freshness.",
+    noteA: "Score is based on reports, token count, upvotes, and freshness.",
     noteB: "No on-chain verification is performed.",
     noteC: "Use this as a social signal, not a factual finding.",
-    addComment: "Add comment",
-    commentPlaceholder: "Write a short comment",
-    send: "Send",
     rulesEyebrow: "Important context",
     rulesTitle: "Submissions are not verification.",
     ruleOneTitle: "Community submitted",
@@ -95,9 +81,8 @@ const copy = {
     ruleTwoTitle: "Not proof",
     ruleTwoBody: "ConfessWall does not decide whether a claim is true. Use it as a starting point for your own checks.",
     ruleThreeTitle: "X-first profiles",
-    ruleThreeBody: "Each profile groups reported tokens, votes, comments, and activity under one X handle.",
+    ruleThreeBody: "Each profile groups reported tokens, votes, and activity under one X handle.",
     loading: "Loading profiles...",
-    loadingProfile: "Loading profile...",
     error: "Something went wrong. Try again.",
     required: "Please fill out {field}.",
     invalidUrl: "Please enter a valid URL.",
@@ -107,7 +92,7 @@ const copy = {
     langButton: "EN",
     eyebrow: "社区提交的 X 账号和 Token",
     title: "搜索与 Token Rug 和诈骗举报相关的 X 账号。",
-    body: "ConfessWall 不验证举报真伪。这里仅展示社区提交过哪些 X 账号和 Token，并附带点赞、评论和简单热度评分。",
+    body: "ConfessWall 不验证举报真伪。这里仅展示社区提交过哪些 X 账号和 Token，并附带点赞和简单热度评分。",
     searchLabel: "搜索 X 或 Token",
     searchPlaceholder: "@username、$TOKEN、代币地址",
     search: "搜索",
@@ -120,8 +105,7 @@ const copy = {
       trending: "趋势风险",
       watchlisted: "观察名单",
       multi: "多个 Token",
-      new: "最新提交",
-      disputed: "评论较多"
+      new: "最新提交"
     },
     trending: "热门 X 账号",
     wallTitle: "被登记的 X 账号",
@@ -130,10 +114,8 @@ const copy = {
     noResultsBody: "换个 X 账号、Token 符号或代币地址试试。",
     communityScore: "社区分",
     view: "查看主页",
-    viewComments: "查看评论",
     vote: "我也被 Rug 了",
     voted: "已投票",
-    comments: "评论",
     latestActivity: "最近活跃",
     xProfile: "X 主页",
     reportType: "举报类型",
@@ -149,12 +131,9 @@ const copy = {
     create: "提交举报",
     reportedTokens: "被登记 Token",
     activityNotes: "活跃说明",
-    noteA: "分数基于提交数、Token 数、点赞、评论和最近活跃度。",
+    noteA: "分数基于提交数、Token 数、点赞和最近活跃度。",
     noteB: "当前不做链上验证。",
     noteC: "请把它当成社群风险信号，而不是事实认定。",
-    addComment: "添加评论",
-    commentPlaceholder: "写一条简短评论",
-    send: "发送",
     rulesEyebrow: "重要说明",
     rulesTitle: "提交记录不等于验证结论。",
     ruleOneTitle: "社区提交",
@@ -162,9 +141,8 @@ const copy = {
     ruleTwoTitle: "不是定论",
     ruleTwoBody: "ConfessWall 不判断举报是否真实。请把它作为进一步核查的起点。",
     ruleThreeTitle: "以 X 账号为核心",
-    ruleThreeBody: "每个主页聚合同一个 X 账号下的 Token、点赞、评论和活跃度。",
+    ruleThreeBody: "每个主页聚合同一个 X 账号下的 Token、点赞和活跃度。",
     loading: "正在加载...",
-    loadingProfile: "正在加载主页...",
     error: "出错了，请稍后重试。",
     required: "请填写{field}。",
     invalidUrl: "请输入有效链接。",
@@ -172,7 +150,7 @@ const copy = {
   }
 };
 
-const filterKeys = ["all", "trending", "watchlisted", "multi", "new", "disputed"] as const;
+const filterKeys = ["all", "trending", "watchlisted", "multi", "new"] as const;
 const chainOptions = ["Ethereum", "Solana", "BSC", "Base"];
 
 function getAnonymousUserId() {
@@ -216,18 +194,14 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof filterKeys)[number]>("all");
   const [loading, setLoading] = useState(true);
-  const [detailLoading, setDetailLoading] = useState(false);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [comment, setComment] = useState("");
-  const [drawerFocus, setDrawerFocus] = useState<"profile" | "comments">("profile");
   const [formError, setFormError] = useState("");
   const [chain, setChain] = useState("Solana");
   const [chainOpen, setChainOpen] = useState(false);
   const [votedProfiles, setVotedProfiles] = useState<string[]>([]);
   const [profileCache, setProfileCache] = useState<Record<string, ApiProfile>>({});
-  const commentsSectionRef = useRef<HTMLHeadingElement | null>(null);
   const text = copy[language];
 
   const totals = useMemo(() => {
@@ -292,17 +266,12 @@ export default function Home() {
       setSelected(fallback);
     }
 
-    setDetailLoading(true);
-    try {
-      const response = await fetch(`/api/profiles/${encodeURIComponent(normalized)}`);
-      if (!response.ok) throw new Error("Failed to load profile");
-      const profile = await response.json();
-      setProfileCache((current) => ({ ...current, [profile.normalized]: profile }));
-      setSelected(profile);
-      return profile;
-    } finally {
-      setDetailLoading(false);
-    }
+    const response = await fetch(`/api/profiles/${encodeURIComponent(normalized)}`);
+    if (!response.ok) throw new Error("Failed to load profile");
+    const profile = await response.json();
+    setProfileCache((current) => ({ ...current, [profile.normalized]: profile }));
+    setSelected(profile);
+    return profile;
   }
 
   useEffect(() => {
@@ -311,14 +280,6 @@ export default function Home() {
     loadProfiles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (!selected || drawerFocus !== "comments" || detailLoading) return;
-
-    window.setTimeout(() => {
-      commentsSectionRef.current?.scrollIntoView({ block: "start" });
-    }, 0);
-  }, [detailLoading, drawerFocus, selected]);
 
   function rememberVote(normalized: string) {
     setVotedProfiles((current) => {
@@ -339,12 +300,6 @@ export default function Home() {
   }
 
   async function openProfile(profile: ApiProfile) {
-    setDrawerFocus("profile");
-    await loadProfile(profile.normalized, profile);
-  }
-
-  async function openComments(profile: ApiProfile) {
-    setDrawerFocus("comments");
     await loadProfile(profile.normalized, profile);
   }
 
@@ -440,30 +395,6 @@ export default function Home() {
       });
       await loadProfiles(query, filter);
       if (selected?.id === profile.id) await loadProfile(profile.normalized);
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : text.error);
-    }
-  }
-
-  async function submitComment(event: FormEvent) {
-    event.preventDefault();
-    if (!selected || !comment.trim()) return;
-
-    try {
-      const response = await fetch(`/api/profile-comments/${encodeURIComponent(selected.normalized)}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: comment, anonymousUserId: getAnonymousUserId() })
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Comment failed");
-      setComment("");
-      setProfileCache((current) => {
-        const { [selected.normalized]: _removed, ...rest } = current;
-        return rest;
-      });
-      await loadProfiles(query, filter);
-      await loadProfile(selected.normalized);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : text.error);
     }
@@ -629,7 +560,6 @@ export default function Home() {
                     <div className="identity-list">
                       <div className="identity-row"><span>{text.xProfile}</span><span>{profile.xUrl}</span></div>
                       <div className="identity-row"><span>{text.latestActivity}</span><span>{shortAge(profile.lastActivityAt)}</span></div>
-                      <div className="identity-row"><span>{text.comments}</span><span>{profile.commentCount}</span></div>
                     </div>
 
                     <div className="action-row">
@@ -642,7 +572,6 @@ export default function Home() {
                       >
                         {alreadyVoted ? text.voted : text.vote}
                       </button>
-                      <button type="button" onClick={() => openComments(profile)}>{text.viewComments} {profile.commentCount}</button>
                     </div>
                   </article>
                 );
@@ -680,7 +609,6 @@ export default function Home() {
             <div className="identity-list">
               <div className="identity-row"><span>{text.xProfile}</span><span>{selected.xUrl}</span></div>
               <div className="identity-row"><span>{text.vote}</span><span>{selected.upvoteCount}</span></div>
-              <div className="identity-row"><span>{text.comments}</span><span>{selected.commentCount}</span></div>
               <div className="identity-row"><span>{text.latestActivity}</span><span>{shortAge(selected.lastActivityAt)}</span></div>
             </div>
 
@@ -702,23 +630,6 @@ export default function Home() {
               <div className="evidence-item">{text.noteC}</div>
             </div>
 
-            <h3 ref={commentsSectionRef}>{text.comments}</h3>
-            {detailLoading ? <div className="comment-item">{text.loadingProfile}</div> : null}
-            <div className="comment-list">
-              {selected.comments?.map((item) => (
-                <div className="comment-item" key={item.id}>{item.content}</div>
-              ))}
-            </div>
-            <form className="comment-form" onSubmit={submitComment}>
-              <label htmlFor="commentInput">{text.addComment}</label>
-              <textarea
-                id="commentInput"
-                placeholder={text.commentPlaceholder}
-                value={comment}
-                onChange={(event) => setComment(event.target.value)}
-              />
-              <button className="primary-button wide" type="submit">{text.send}</button>
-            </form>
           </article>
         </aside>
       ) : null}
