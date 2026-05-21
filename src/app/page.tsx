@@ -8,6 +8,8 @@ type ApiReport = {
   tokenAddress: string | null;
   chain: string;
   reportType: string;
+  description?: string;
+  evidenceUrl?: string | null;
   createdAt: string;
 };
 
@@ -58,6 +60,13 @@ const copy = {
     voted: "Voted",
     latestActivity: "Latest activity",
     reportType: "Report type",
+    reportTypes: {
+      lp: "LP pulled",
+      dump: "Team dumped",
+      mint: "Mint abuse",
+      blacklist: "Blacklist / cannot sell",
+      presale: "Presale exit"
+    },
     whatHappened: "What happened?",
     submitTitle: "Add an X account and token",
     xAccount: "X account",
@@ -117,6 +126,13 @@ const copy = {
     voted: "已投票",
     latestActivity: "最近活跃",
     reportType: "举报类型",
+    reportTypes: {
+      lp: "抽走 LP",
+      dump: "团队砸盘",
+      mint: "Mint 增发",
+      blacklist: "黑名单/无法卖出",
+      presale: "预售跑路"
+    },
     whatHappened: "发生了什么？",
     submitTitle: "添加一个 X 账号和 Token",
     xAccount: "X 账号",
@@ -150,6 +166,13 @@ const copy = {
 
 const filterKeys = ["all", "trending", "watchlisted", "multi", "new"] as const;
 const chainOptions = ["Ethereum", "Solana", "BSC", "Base"];
+const reportTypeOptions = [
+  { value: "LP pulled", key: "lp" },
+  { value: "Team dumped", key: "dump" },
+  { value: "Mint abuse", key: "mint" },
+  { value: "Blacklist / cannot sell", key: "blacklist" },
+  { value: "Presale exit", key: "presale" }
+] as const;
 
 function getAnonymousUserId() {
   const key = "confesswall-anonymous-id";
@@ -192,6 +215,13 @@ function xProfileHref(profile: Pick<ApiProfile, "normalized">) {
 function ruggedTooLabel(count: number, language: Language) {
   if (language === "zh") return `${count} 人也被 Rug`;
   return count === 1 ? "1 was rugged too" : `${count} were rugged too`;
+}
+
+function reportTypeLabel(reportType: string, language: Language) {
+  const option = reportTypeOptions.find((item) => item.value === reportType);
+  if (!option) return reportType;
+
+  return copy[language].reportTypes[option.key];
 }
 
 export default function Home() {
@@ -623,9 +653,15 @@ export default function Home() {
             <div className="evidence-list">
               {selected.reports.map((report) => (
                 <div className="evidence-item" key={report.id}>
-                  <strong>{report.tokenSymbol}</strong> / {report.chain} / {report.reportType}
+                  <strong>{report.tokenSymbol}</strong> / {report.chain} / {reportTypeLabel(report.reportType, language)}
                   <br />
                   <span>{report.tokenAddress || "-"}</span>
+                  {report.description ? <p>{report.description}</p> : null}
+                  {report.evidenceUrl ? (
+                    <a href={report.evidenceUrl} target="_blank" rel="noreferrer">
+                      {report.evidenceUrl}
+                    </a>
+                  ) : null}
                 </div>
               ))}
             </div>
@@ -697,11 +733,11 @@ export default function Home() {
             <label>
               <span>{text.reportType}</span>
               <select name="reportType" required>
-                <option>LP pulled</option>
-                <option>Team dumped</option>
-                <option>Mint abuse</option>
-                <option>Blacklist / cannot sell</option>
-                <option>Presale exit</option>
+                {reportTypeOptions.map((option) => (
+                  <option value={option.value} key={option.value}>
+                    {text.reportTypes[option.key]}
+                  </option>
+                ))}
               </select>
             </label>
             <label><span>{text.description}</span><textarea name="description" placeholder={text.whatHappened} /></label>

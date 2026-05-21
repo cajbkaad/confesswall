@@ -263,6 +263,23 @@ input:focus, select:focus, textarea:focus {
 .drawer-panel h2 { padding-right: 44px; }
 .drawer-score { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 22px 0; }
 .drawer-score div, .evidence-item { padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255, 255, 255, 0.04); }
+.evidence-item p {
+  margin: 10px 0 0;
+  color: var(--text);
+  line-height: 1.5;
+}
+.evidence-item a {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--blue);
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.evidence-item a:hover {
+  color: var(--danger-2);
+}
 .drawer-score strong { display: block; color: var(--danger-2); font-size: 26px; }
 .report-dialog { position: fixed; inset: 0; z-index: 30; width: min(640px, calc(100% - 28px)); height: max-content; max-height: calc(100vh - 28px); overflow-y: auto; margin: auto; border: 1px solid var(--line); border-radius: 8px; padding: 0; background: transparent; color: var(--text); }
 .report-dialog::backdrop { background: rgba(0, 0, 0, 0.68); }
