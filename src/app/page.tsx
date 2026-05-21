@@ -187,6 +187,10 @@ function shortAge(date: string) {
   return `${Math.floor(hours / 24)}d`;
 }
 
+function xProfileHref(profile: Pick<ApiProfile, "normalized">) {
+  return `https://x.com/${profile.normalized}`;
+}
+
 export default function Home() {
   const [language, setLanguage] = useState<Language>("en");
   const [profiles, setProfiles] = useState<ApiProfile[]>([]);
@@ -558,7 +562,12 @@ export default function Home() {
                     </div>
 
                     <div className="identity-list">
-                      <div className="identity-row"><span>{text.xProfile}</span><span>{profile.xUrl}</span></div>
+                      <div className="identity-row">
+                        <span>{text.xProfile}</span>
+                        <a href={xProfileHref(profile)} target="_blank" rel="noreferrer">
+                          {xProfileHref(profile)}
+                        </a>
+                      </div>
                       <div className="identity-row"><span>{text.latestActivity}</span><span>{shortAge(profile.lastActivityAt)}</span></div>
                     </div>
 
@@ -607,7 +616,12 @@ export default function Home() {
               <div><strong>{selected.tokenCount}</strong><span>{text.tokens}</span></div>
             </div>
             <div className="identity-list">
-              <div className="identity-row"><span>{text.xProfile}</span><span>{selected.xUrl}</span></div>
+              <div className="identity-row">
+                <span>{text.xProfile}</span>
+                <a href={xProfileHref(selected)} target="_blank" rel="noreferrer">
+                  {xProfileHref(selected)}
+                </a>
+              </div>
               <div className="identity-row"><span>{text.vote}</span><span>{selected.upvoteCount}</span></div>
               <div className="identity-row"><span>{text.latestActivity}</span><span>{shortAge(selected.lastActivityAt)}</span></div>
             </div>
