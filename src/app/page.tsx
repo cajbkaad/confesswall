@@ -65,7 +65,9 @@ const copy = {
       dump: "Team dumped",
       mint: "Mint abuse",
       blacklist: "Blacklist / cannot sell",
-      presale: "Presale exit"
+      presale: "Presale exit",
+      shill: "Paid shill / call promotion",
+      misleading: "Misleading promotion"
     },
     whatHappened: "What happened?",
     submitTitle: "Add an X account and token",
@@ -131,7 +133,9 @@ const copy = {
       dump: "团队砸盘",
       mint: "Mint 增发",
       blacklist: "黑名单/无法卖出",
-      presale: "预售跑路"
+      presale: "预售跑路",
+      shill: "帮助喊单",
+      misleading: "虚假宣传"
     },
     whatHappened: "发生了什么？",
     submitTitle: "添加一个 X 账号和 Token",
@@ -171,7 +175,9 @@ const reportTypeOptions = [
   { value: "Team dumped", key: "dump" },
   { value: "Mint abuse", key: "mint" },
   { value: "Blacklist / cannot sell", key: "blacklist" },
-  { value: "Presale exit", key: "presale" }
+  { value: "Presale exit", key: "presale" },
+  { value: "Paid shill / call promotion", key: "shill" },
+  { value: "Misleading promotion", key: "misleading" }
 ] as const;
 
 function getAnonymousUserId() {
