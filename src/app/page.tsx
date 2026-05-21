@@ -70,7 +70,7 @@ const copy = {
     create: "Submit Report",
     reportedTokens: "Reported Tokens",
     activityNotes: "Activity Notes",
-    noteA: "Scam Risk Score is based on reports, token count, upvotes, and freshness.",
+    noteA: "Scam Risk Score is based on linked token count, rugged-too votes, and recent activity.",
     noteB: "No on-chain verification is performed.",
     noteC: "Use this as a social signal, not a factual finding.",
     rulesEyebrow: "Important context",
@@ -129,7 +129,7 @@ const copy = {
     create: "提交举报",
     reportedTokens: "被登记 Token",
     activityNotes: "活跃说明",
-    noteA: "诈骗风险分基于提交数、Token 数、点赞和最近活跃度。",
+    noteA: "诈骗风险分基于关联 Token 数、被 Rug 反馈人数和最近活跃度。",
     noteB: "当前不做链上验证。",
     noteC: "请把它当成社群风险信号，而不是事实认定。",
     rulesEyebrow: "重要说明",
@@ -165,16 +165,16 @@ function getAnonymousUserId() {
 
 function levelFor(score: number, language: Language) {
   if (language === "zh") {
-    if (score >= 80) return "趋势风险";
-    if (score >= 60) return "大量提交";
-    if (score >= 30) return "观察名单";
-    return "低活跃";
+    if (score >= 80) return "严重风险";
+    if (score >= 60) return "高风险";
+    if (score >= 30) return "已标记";
+    return "低信号";
   }
 
-  if (score >= 80) return "Trending Risk";
-  if (score >= 60) return "Heavily Reported";
-  if (score >= 30) return "Watchlisted";
-  return "Low Activity";
+  if (score >= 80) return "Severe Risk";
+  if (score >= 60) return "High Risk";
+  if (score >= 30) return "Flagged";
+  return "Low Signal";
 }
 
 function shortAge(date: string) {

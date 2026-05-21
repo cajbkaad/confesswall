@@ -27,7 +27,6 @@ export async function refreshProfileStats(xProfileId: string) {
   );
   const tokenCount = tokenKeys.size;
   const communityScore = calculateScamRiskScore({
-    reports,
     tokens: tokenCount,
     upvotes,
     lastActivityAt: profile.lastActivityAt
